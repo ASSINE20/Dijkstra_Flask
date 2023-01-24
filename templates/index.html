@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trouver le plus court chemin</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
+  <style type="text/css">
+    
+
+  </style>
+  <a href="{{ url_for('index') }}"></a>
+  </head>
+<body>
+    
+        <h1 class="text-center mb-4">Calculateur chemin le plus court entre deux villes</h1>
+        <form action="{{ url_for('chemin') }}" method="POST" name="chemin_form" onsubmit= " return validerFormulaire()">
+          
+          <div class="form-group">
+            <label for="debut">Ville de départ:</label>
+            <p><input type="text" name="debut" id="debut" /></p>
+          </div>
+          <div class="form-group">
+            <label for="fin">Ville d'arrivée:</label>
+            <p><input type="text" name="fin" id="fin" /></p>
+          </div>
+            <input type="submit" value="Trouver le plus court chemin" class="btn btn-primary"/>
+            <input type="reset" value="Reset the form" class="btn btn-reset"/>
+        </form>
+
+        <script type="text/javascript">
+    
+          function validerFormulaire() {
+
+            var debut = document.getElementById("debut").value;
+            var fin = document.getElementById("fin").value;
+
+          
+            if (debut == "" || fin == "") {
+
+              alert("Veuillez sélectionner une ville de départ et une ville d'arrivée.");
+
+              return false;
+            } 
+            else {
+              return true;
+              }
+          }
+          
+          
+        </script>
+</body>
+</html>
