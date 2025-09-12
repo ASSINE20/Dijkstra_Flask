@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Index: home page providing the form to compute the shortest path. -->
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
@@ -12,6 +13,7 @@
 </head>
 <body>
     
+        <!-- Page title and form -->
         <h1 class="text-center mb-4">Calculateur chemin le plus court entre deux villes</h1>
         <form action="{{ url_for('chemin') }}" method="POST" name="chemin_form" onsubmit= " return validerFormulaire()">
           
@@ -27,6 +29,7 @@
             <input type="reset" value="Reset the form" class="btn btn-reset"/>
         </form>
 
+        <!-- Simple client-side validation to avoid empty submissions -->
         <script type="text/javascript">
           function validerFormulaire() {
             var debut = document.getElementById('debut').value;

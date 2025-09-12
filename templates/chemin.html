@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Chemin: result page displaying computed path and distance. -->
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
@@ -11,6 +12,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v={{ STATIC_VERSION }}">
 </head>
 <body class="bg-light">
+  <!-- Container with computed path and distance -->
   <form action="" method="get">
     <div class="container">
     <h1 class="text-center">Plus court chemin entre {{ start_node }} et {{ target_node }}</h1>
@@ -23,6 +25,7 @@
 
   
   </form>
+  <!-- Small helper to navigate back to the form -->
   <script type="text/javascript">
     function goBack() {
       window.history.back();

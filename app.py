@@ -1,3 +1,9 @@
+"""Flask application for computing shortest paths between Senegalese cities.
+
+This module wires the web interface, configures performance optimizations
+(compression and caching), and adapts the Dijkstra graph utilities to
+serve results via HTML templates.
+"""
 from flask import Flask, request, render_template,redirect, url_for
 import dijkstra
 from flask_compress import Compress
@@ -10,6 +16,13 @@ app.config['STATIC_VERSION'] = '1'
 
 @app.context_processor
 def inject_static_version():
+    """Expose a `STATIC_VERSION` variable to templates for cache-busting.
+
+    Returns
+    -------
+    dict
+        Mapping with the version string used in static asset URLs.
+    """
     return { 'STATIC_VERSION': app.config.get('STATIC_VERSION', '1') }
 
 # définir les distances entre les villes ici, sous forme de dictionnaire
@@ -54,7 +67,11 @@ distance_villes = {
 
 @app.after_request
 def add_cache_headers(response):
-    # Cache-bust only dynamic routes; cache static aggressively
+    """Set Cache-Control headers for responses.
+
+    - Static assets: cache for one year with `immutable`.
+    - Dynamic routes: default to `no-store` to avoid stale content.
+    """
     if request.path.startswith('/static/'):
         response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
     else:
@@ -63,6 +80,22 @@ def add_cache_headers(response):
 
 
 def build_path(previous_nodes, start_node, target_node):
+    """Reconstruct the shortest path sequence from predecessors mapping.
+
+    Parameters
+    ----------
+    previous_nodes : dict[str, str]
+        Mapping from node to its predecessor on the shortest path tree.
+    start_node : str
+        Source node name.
+    target_node : str
+        Destination node name.
+
+    Returns
+    -------
+    list[str]
+        Ordered list of node names from start to target (inclusive).
+    """
     path_nodes = []
     node = target_node
     while node != start_node:
@@ -73,11 +106,17 @@ def build_path(previous_nodes, start_node, target_node):
 
 @app.route("/")
 def index():
+    """Render the home page with the shortest-path form."""
 
     return render_template("index.html")
 
 @app.route("/chemin", methods=["GET","POST"])
 def chemin():
+    """Handle shortest path computation and render results.
+
+    POST expects form fields `debut` (start) and `fin` (end). On success,
+    renders `chemin.html` with the path and distance; on GET, redirect home.
+    """
     
     if request.method == 'POST':
 
