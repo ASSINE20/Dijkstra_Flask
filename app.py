@@ -1,7 +1,16 @@
 from flask import Flask, request, render_template,redirect, url_for
 import dijkstra
+from flask_compress import Compress
 
 app = Flask(__name__)
+Compress(app)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
+app.config['TEMPLATES_AUTO_RELOAD'] = False
+app.config['STATIC_VERSION'] = '1'
+
+@app.context_processor
+def inject_static_version():
+    return { 'STATIC_VERSION': app.config.get('STATIC_VERSION', '1') }
 
 # définir les distances entre les villes ici, sous forme de dictionnaire
 distance_villes = {
@@ -43,20 +52,24 @@ distance_villes = {
         "Tambacounda":{"Goudiri":298, "Kaffrine":214, "Kédougou":233}
         }
 
-#Affichage des résultats
-path = []
-def affiche_resultat(previous_nodes, shortest_path, start_node, target_node):
-    
+@app.after_request
+def add_cache_headers(response):
+    # Cache-bust only dynamic routes; cache static aggressively
+    if request.path.startswith('/static/'):
+        response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
+    else:
+        response.headers.setdefault('Cache-Control', 'no-store')
+    return response
+
+
+def build_path(previous_nodes, start_node, target_node):
+    path_nodes = []
     node = target_node
-    
     while node != start_node:
-        path.append(node)
+        path_nodes.append(node)
         node = previous_nodes[node]
- 
-    # Add the start node manually
-    path.append(start_node)
-
-
+    path_nodes.append(start_node)
+    return list(reversed(path_nodes))
 
 @app.route("/")
 def index():
@@ -77,14 +90,11 @@ def chemin():
         init_graph = distance_villes
         graph = dijkstra.Graph(nodes, init_graph)
         previous_nodes, shortest_path = dijkstra.dijkstra(graph=graph, start_node=debut)
-        
-
-        affiche_resultat(previous_nodes, shortest_path, start_node=debut, target_node=fin)
-  
-        return render_template("chemin.html",start_node=debut, target_node=fin, chemin =" -> ".join(reversed(path)),
+        chemin_nodes = build_path(previous_nodes, start_node=debut, target_node=fin)
+        return render_template("chemin.html",start_node=debut, target_node=fin, chemin =" -> ".join(chemin_nodes),
         distance = "{}.".format(shortest_path[fin]))
     else:
-        return redirect('Données non valide.')
+        return redirect(url_for('index'))
 
 
 if __name__ == "__main__":

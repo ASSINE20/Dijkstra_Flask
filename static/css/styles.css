@@ -38,3 +38,22 @@ body  {
   border-color: #007bff;
 }
 
+/* Page chemin styles moved from inline */
+body.bg-light {
+  background-color: #f5f5f5;
+}
+
+h1 {
+  margin-top: 50px;
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+.list-group-item {
+  border-radius: 0;
+}
+
+.lead {
+  margin-top: 30px;
+  font-size: 1.5em;
+}
